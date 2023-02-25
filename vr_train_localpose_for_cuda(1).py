@@ -29,7 +29,7 @@ def train_conv_odo_imu_net(train_dataset, checkpoint_path):
     batch_size = 1
     learning_rate = 0.005
     epochs = 100
-    odo_frames = 80 #？？？我目前理解，这个就是batch Size，代表每次选40帧原始数据进行训练
+    odo_frames = 40 #？？？我目前理解，这个就是batch Size，代表每次选40帧原始数据进行训练
     # 读入数据
     dataset_list = []
     for dir in os.listdir(train_dataset):
@@ -41,8 +41,8 @@ def train_conv_odo_imu_net(train_dataset, checkpoint_path):
         dataset, batch_size=batch_size, num_workers=14, shuffle=True, pin_memory=True)
     print("load dataset finished")
     #定义网络 6层 7参 输入10*40维度 输出2维度
-    odonet = FcnOdoNetV4(18 * odo_frames, 1024, 521, 256, 128, 64, 6)
-    #  odonet =TransAm(    feature_size=10 * odo_frames  ,num_layers=1,dropout=0.5  )
+    # odonet = FcnOdoNetV4(18 * odo_frames, 1024, 521, 256, 128, 64, 6)
+    odonet =TransAm(    feature_size=15 * odo_frames  ,num_layers=1,dropout=0.5  )
     odonet = odonet.to(device)
     odonet = nn.DataParallel(odonet)
     # model.train()的作用是启用 Batch Normalization 和 Dropout。如果模型中有BN层(Batch Normalization）和Dropout，需要在训练时添加model.train()。model.train()是保证BN层能够用到每一批数据的均值和方差。对于Dropout，model.train()是随机取一部分网络连接来训练更新参数。
